@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./etc/nginx/:/etc/nginx/
+    networks:
+      - PiNet
+    depends_on:
+      - portainer
+      - heimdall
+
+  portainer:
+    image: portainer/portainer-ce:alpine
+    container_name: portainer
+    command: -H unix:///var/run/docker.sock
+#    ports:
+#      - "80"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - ".:/data"
+    restart: always
+    networks:
+      - PiNet
+
+  heimdall:
+    image: lscr.io/linuxserver/heimdall:latest
+    container_name: heimdall
+    environment:
+      - "PUID=1000"
+      - "PGID=1000"
+      - "TZ=Etc/UTC"
+    volumes:
+      - "../heimdall/config:/config"
+#    ports:
+#      - "80"
+#      - "443"
+    restart: "unless-stopped"
+
+    networks:
+      - PiNet
+
+networks:
+  PiNet:
+    external: true
+
