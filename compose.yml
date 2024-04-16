@@ -3,14 +3,14 @@ version: '3.8'
 services:
   nginx:
     image: nginx:latest
-    container_name: nginx
+    container_name: nginx-proxy
     ports:
       - "80:80"
       - "443:443"
     volumes:
       - ./etc/nginx/:/etc/nginx/
     networks:
-      - PiNet
+      - pinet-internal
     depends_on:
       - portainer
       - heimdall
@@ -26,7 +26,7 @@ services:
       - ".:/data"
     restart: always
     networks:
-      - PiNet
+      - pinet-internal
 
   heimdall:
     image: lscr.io/linuxserver/heimdall:latest
@@ -36,16 +36,16 @@ services:
       - "PGID=1000"
       - "TZ=Etc/UTC"
     volumes:
-      - "../heimdall/config:/config"
+      - "./heimdall/config:/config"
 #    ports:
 #      - "80"
 #      - "443"
     restart: "unless-stopped"
 
     networks:
-      - PiNet
+      - pinet-internal
 
 networks:
-  PiNet:
+  pinet-internal:
     external: true
 
